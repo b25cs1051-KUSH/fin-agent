@@ -11,11 +11,16 @@ DOCS = [
     "Crypto markets rally as BTC hits a new all time high",
     "ISRO launches a new earth observation satellite from Sriharikota",
     "Indian space agency puts a remote sensing satellite into orbit",
+        "TCS reports a 9 percent jump in Q2 net profit",
+    "Tata Consultancy Services posts strong quarterly earnings",
+    "RBI keeps the repo rate unchanged",
+    "Bitcoin falls below 50,000 dollars",
 ]
 QUERIES = [
-    "central bank increases borrowing costs",
-    "tech company stock drops on poor outlook",
-    "satellite launch by India",
+    "TCS Q2 results",
+    "RBI does not change interest rates",
+    "RBI raises interest rates",
+    "Bitcoin price crash",
 ]
 
 def tokenize(text):
@@ -83,5 +88,11 @@ print("doc_vecs shape:", docs_vecs.shape)
 for q in QUERIES:
      print(q)
      docs,scores = embed_search(q)
+     doc2,score2 = search(q)
      for doc, s in zip(docs,scores):
           print(f"  {s:.3f}  {doc}")
+     print("---bag_of_words---")
+     for doc,s in zip(doc2,score2):
+          print(f"  {s:.3f}  {doc}")
+     
+
