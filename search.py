@@ -52,8 +52,36 @@ def bag_of_words(texts):
 
     return mat, vocab
 
+def cosine(q,D):
+     dot_product = np.dot(D,q)
+     norm_q = np.linalg.norm(q)
+     norm_D = np.linalg.norm(D,axis = 1)
+     return dot_product / (norm_q * norm_D)
 
-mat, vocab = bag_of_words(DOCS + QUERIES)
-print(mat.shape)    # should be (11, 82)
-print(vocab[:6])    # should be ['100000', '25', '4', 'a', 'after', 'agency']
-print(mat[0].sum()) # how many tokens are in the first headline?
+def search(query, k=2):
+     matrix ,vocab = bag_of_words(DOCS + [query])
+     D = matrix[:len(DOCS),:]
+     q = matrix[len(DOCS),:]
+     scores = cosine(q, D)
+     top_indices = np.argsort(-scores)[:k]
+     return [DOCS[i] for i in top_indices] , scores[top_indices]
+
+from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer('all-MiniLM-L6-v2',device ="cuda")
+docs_vecs = model.encode(DOCS)
+
+def embed_search(query,k=2):
+    q = model.encode(query)
+    scores = cosine(q,docs_vecs)
+    top_indices = np.argsort(-scores)[:k]
+    return [DOCS[i] for i in top_indices],scores[top_indices]
+
+print("\n=== EMBEDDINGS ===")
+print("doc_vecs shape:", docs_vecs.shape)
+
+for q in QUERIES:
+     print(q)
+     docs,scores = embed_search(q)
+     for doc, s in zip(docs,scores):
+          print(f"  {s:.3f}  {doc}")
